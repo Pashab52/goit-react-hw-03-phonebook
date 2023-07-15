@@ -16,40 +16,53 @@ export class App extends Component {
     filter: '',
   };
 
+  componentDidMount() { 
+
+  const contactsJSON = localStorage.getItem('contacts');
+      const localContacts = JSON.parse(contactsJSON);
+ 
+  if (this.state.contacts !== localContacts && localContacts !== null) {
+    this.setState({ contacts: localContacts });
+  }
+   
+  };
+
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts))
+    }
+  }
+
   onFormSubmit = newContact => {
-    const copyNewContact = {...newContact}
-    
+    const copyNewContact = { ...newContact };
+
     this.setState(prevState => {
       copyNewContact.id = nanoid();
       return { contacts: [...prevState.contacts, copyNewContact] };
     });
   };
 
-  onFilterChange=(filterWord)=> {
-
-  this.setState({
-    filter: filterWord,
-  });
-  }
-
+  onFilterChange = filterWord => {
+    this.setState({
+      filter: filterWord,
+    });
+  };
 
   filterContacts() {
-
     const normalizedFilter = this.state.filter.toLowerCase();
     return this.state.contacts.filter(contact =>
-    contact.name.toLowerCase().includes(normalizedFilter)
+      contact.name.toLowerCase().includes(normalizedFilter)
     );
   }
 
-  deleteContact=(id)=> {
-    this.setState(prevState=> ({ contacts: prevState.contacts.filter((contact) => contact.id !== id)}))
-    
-  }
-
-
+  deleteContact = id => {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== id),
+    }));
+  };
 
   render() {
-
     return (
       <div className={css.phoneContainer}>
         <h1>Phonebook</h1>
